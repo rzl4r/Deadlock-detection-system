@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deadlock Detection Tool</title>
+
+  <!-- Google Fonts: JetBrains Mono + Syne -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Vis.js Network (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ───────────────── HEADER ───────────────── -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo-block">
+        <span class="logo-icon">⬡</span>
+        <div>
+          <h1 class="logo-title">DeadlockScan</h1>
+          <p class="logo-sub">OS Process & Resource Deadlock Detector</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge">Wait-For Graph</span>
+        <span class="badge">DFS Cycle Detection</span>
+        <span class="badge badge-green">v1.0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ───────────────── MAIN LAYOUT ───────────────── -->
+  <main class="app-main">
+
+    <!-- LEFT PANEL: Inputs -->
+    <section class="panel panel-left" id="inputPanel">
+
+      <!-- Process Table -->
+      <div class="card" id="processCard">
+        <div class="card-header">
+          <span class="card-title">
+            <span class="dot dot-cyan"></span> Processes &amp; Resources
+          </span>
+          <button class="btn btn-ghost" onclick="loadDemo()" title="Load demo scenario">
+            ⚡ Demo
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="alloc-table" id="allocTable">
+            <thead>
+              <tr>
+                <th>Process</th>
+                <th>Allocated<br/><span class="th-hint">(resources held)</span></th>
+                <th>Requested<br/><span class="th-hint">(resources needed)</span></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="allocBody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-actions">
+          <button class="btn btn-outline" onclick="addProcessRow()">
+            <span>＋</span> Add Process
+          </button>
+          <button class="btn btn-outline" onclick="resetTable()">
+            <span>↺</span> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Resource Legend -->
+      <div class="card card-sm" id="resourceCard">
+        <div class="card-header">
+          <span class="card-title">
+            <span class="dot dot-amber"></span> Resource Registry
+          </span>
+          <button class="btn btn-ghost" onclick="addResourceGlobal()">＋ Add Resource</button>
+        </div>
+        <div id="resourceList" class="resource-chips">
+          <!-- chips rendered by JS -->
+        </div>
+        <p class="hint-text">Resources are auto-detected from your table entries. Add extras here if needed.</p>
+      </div>
+
+      <!-- Run Button -->
+      <button class="btn btn-primary btn-run" onclick="runDetection()">
+        <span class="run-icon">▶</span> Run Deadlock Detection
+      </button>
+
+    </section>
+
+    <!-- RIGHT PANEL: Graph + Results -->
+    <section class="panel panel-right">
+
+      <!-- Graph Card -->
+      <div class="card card-graph">
+        <div class="card-header">
+          <span class="card-title">
+            <span class="dot dot-purple"></span> Wait-For Graph
+          </span>
+          <div class="graph-legend">
+            <span class="legend-item"><span class="legend-dot safe"></span> Safe</span>
+            <span class="legend-item"><span class="legend-dot dead"></span> Deadlocked</span>
+          </div>
+        </div>
+        <div id="graphContainer"></div>
+        <div id="graphPlaceholder" class="graph-placeholder">
+          <div class="placeholder-icon">⬡</div>
+          <p>Add processes and click <strong>Run Detection</strong> to visualize the wait-for graph.</p>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card" id="resultCard">
+        <div class="card-header">
+          <span class="card-title">
+            <span class="dot dot-cyan"></span> Analysis Result
+          </span>
+        </div>
+        <div id="resultBody" class="result-body">
+          <div class="result-idle">
+            <span class="idle-icon">◌</span>
+            <p>Awaiting analysis…</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ───────────────── FOOTER ───────────────── -->
+  <footer class="app-footer">
+    <span>DeadlockScan — Built for OS Concepts | Wait-For Graph · DFS Cycle Detection</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
